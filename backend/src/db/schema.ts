@@ -32,7 +32,7 @@ export const products = pgTable("products", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
 export const comments = pgTable("comments", {
@@ -79,7 +79,7 @@ export const productsRelations = relations(products, ({ many, one }) => ({
   // so it means products.userId is referenced to users.id
   // fields is forgein key in this table
   // references is primary key in other table
-  users: one(users, { fields: [products.userId], references: [users.id] }),
+  user: one(users, { fields: [products.userId], references: [users.id] }),
   comments: many(comments),
 }));
 
@@ -87,8 +87,8 @@ export const productsRelations = relations(products, ({ many, one }) => ({
 // a commnet belong to one user and one product
 
 export const commentsRelations = relations(comments, ({ one }) => ({
-  users: one(users, { fields: [comments.userId], references: [users.id] }),
-  products: one(products, {
+  user: one(users, { fields: [comments.userId], references: [users.id] }),
+  product: one(products, {
     fields: [comments.productId],
     references: [products.id],
   }),
