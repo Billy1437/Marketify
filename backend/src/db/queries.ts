@@ -1,6 +1,13 @@
 import { db } from "./index";
 import { eq } from "drizzle-orm";
-import { users, NewUser, NewProduct, products, comments, NewComment } from "./schema";
+import {
+  users,
+  NewUser,
+  NewProduct,
+  products,
+  comments,
+  NewComment,
+} from "./schema";
 
 export const createUser = async (data: NewUser) => {
   // why do i have to [user] = and returning() ?
@@ -20,6 +27,9 @@ export const getUserById = async (id: string) => {
 };
 
 export const updateUser = async (id: string, data: Partial<NewUser>) => {
+  const exisingUser = await getUserById(id);
+  if (!exisingUser) throw new Error("User not found");
+
   const [user] = await db
     .update(users)
     .set(data)
@@ -29,12 +39,26 @@ export const updateUser = async (id: string, data: Partial<NewUser>) => {
 };
 
 // upsert mean = create if not exists , update if exists
+// if 2 req parallel come => first req read user => not found => throw error
+// both them use createuSERMETHOD
+// both will insert same user => error -> primary key violation
+// so we use update user method to update user
+// one is complete and other one will fail
+//
+
 export const upsertUser = async (data: NewUser) => {
-  const exisingUser = await getUserById(data.id);
+  //   const exisingUser = await getUserById(data.id);
 
-  if (exisingUser) return updateUser(data.id, data);
+  //   if (exisingUser) return updateUser(data.id, data);
 
-  return createUser(data);
+  //   return createUser(data);
+
+  const [user] = await db
+    .insert(users)
+    .values(data)
+    .onConflictDoUpdate({ target: users.id, set: data })
+    .returning();
+  return user;
 };
 
 // product queries
@@ -92,6 +116,10 @@ export const getProductsByUserId = async (userId: string) => {
 };
 
 export const updateProduct = async (id: string, data: Partial<NewProduct>) => {
+  // check if the product already exists
+  const exisingProduct = await getProductById(id);
+  if (!exisingProduct) throw new Error("Product not found");
+
   const [product] = await db
     .update(products)
     .set(data)
@@ -101,6 +129,8 @@ export const updateProduct = async (id: string, data: Partial<NewProduct>) => {
 };
 
 export const deleteProduct = async (id: string) => {
+    const exisingProduct = await getProductById(id)
+    if(!exisingProduct) throw new Error("Product not found")
   // why do i have to return product ?
   // to check if the product is deleted successfully
   // and return the deleted product
@@ -113,22 +143,24 @@ export const deleteProduct = async (id: string) => {
 
 // comment queries
 
-export const createComment = async (data : NewComment) => {
-    const [comment] = await db.insert(comments).values(data).returning();
-    return comment;
-}
+export const createComment = async (data: NewComment) => {
+  const [comment] = await db.insert(comments).values(data).returning();
+  return comment;
+};
 
 export const deleteComment = async (id: string) => {
-    const [comment] = await db.delete(comments).where(eq(comments.id , id)).returning();
-    return comment;
+  const [comment] = await db
+    .delete(comments)
+    .where(eq(comments.id, id))
+    .returning();
+  return comment;
+};
 
-}
-
-export const getCommentById = async (id : string) => {
-    return db.query.comments.findFirst({
-        where : eq(comments.id , id),
-        with : {
-            user : true,
-        }
-    })
-}
+export const getCommentById = async (id: string) => {
+  return db.query.comments.findFirst({
+    where: eq(comments.id, id),
+    with: {
+      user: true,
+    },
+  });
+};
