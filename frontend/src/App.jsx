@@ -15,13 +15,9 @@ function App() {
   if (!isClerkLoaded) return null;
 
   return (
-    // min h screen means => minimum height of screen should be 100% of screen height
-    // this is done so that even if we dont add content in a page
-    // the background color should be visible
-    <div className="min-h-screen bg-base-100">
+    <div className="min-h-screen bg-[#fdf8f3]">
       <Navbar />
-      {/* this main acts like a page wrapper, we will render our pages in this main */}
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-6 py-10">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/product/:id" element={<ProductPage />} />
@@ -29,7 +25,6 @@ function App() {
             path="/profile"
             element={isSignedIn ? <ProfilePage /> : <Navigate to={"/"} />}
           />
-
           <Route
             path="/create"
             element={isSignedIn ? <CreatePage /> : <Navigate to={"/"} />}
