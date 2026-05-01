@@ -109,30 +109,3 @@ This project is deployed as a single Render web service — the Express backend 
 
 > `VITE_*` variables are baked into the frontend at build time — a full redeploy is required after changing them.
 
-## Keeping the Server Alive (Cron Job)
-
-Render's free tier spins down web services after 15 minutes of inactivity. To prevent this, set up a cron job to ping the health endpoint every 14 minutes.
-
-### Option A — cron-job.org (recommended, free)
-
-1. Go to [cron-job.org](https://cron-job.org) and sign up
-2. Click **Create cronjob**
-3. Set the URL to:
-   ```
-   https://your-app.onrender.com/api/health
-   ```
-4. Set execution schedule to **every 14 minutes**
-5. Save
-
-### Option B — UptimeRobot (free)
-
-1. Go to [uptimerobot.com](https://uptimerobot.com) and sign up
-2. Add a new **HTTP(S)** monitor
-3. Set the URL to:
-   ```
-   https://your-app.onrender.com/api/health
-   ```
-4. Set interval to **5 minutes**
-5. Save
-
-UptimeRobot also sends downtime alerts as a bonus.
