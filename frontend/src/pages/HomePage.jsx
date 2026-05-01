@@ -22,7 +22,7 @@ const HomePage = () => {
     <div className="space-y-12">
       {/* Hero */}
       <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 rounded-3xl overflow-hidden">
-        <div className="flex flex-col lg:flex-row-reverse items-center gap-10 px-10 py-12">
+        <div className="flex flex-col lg:flex-row-reverse lg:justify-center items-center gap-10 px-10 py-12">
           <div className="relative shrink-0">
             <div className="absolute inset-0 bg-orange-300/30 blur-3xl rounded-full scale-110" />
             <img

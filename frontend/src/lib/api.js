@@ -14,12 +14,12 @@ export const getAllProducts = async () => {
 
 export const getProductById = async(id) => {
     const response = await api.get(`/products/${id}`)
-    return response.data;
+    return response.data.product;
 }
 
 export const getMyProducts = async () => {
     const response = await api.get('/products')
-    return response.data;
+    return response.data.products;
 }
 
 // create prducts
