@@ -1,38 +1,24 @@
-import { Link, useNavigate } from "react-router";
-import { useCreateProduct } from "../hooks/useProducts";
-import { useState } from "react";
 import {
   ArrowLeftIcon,
-  FileTextIcon,
   ImageIcon,
-  SparklesIcon,
   TypeIcon,
+  FileTextIcon,
+  SaveIcon,
 } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router";
 
-function CreatePage() {
-  const navigate = useNavigate();
-  const createProduct = useCreateProduct();
+function EditProductForm({ product, isPending, isError, onSubmit }) {
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    imageUrl: "",
+    title: product.title,
+    description: product.description,
+    imageUrl: product.imageUrl,
   });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.title || !formData.description || !formData.imageUrl) {
-      alert("Please fill in all fields");
-      return;
-    }
-    createProduct.mutate(formData, {
-      onSuccess: () => navigate("/"),
-    });
-  };
 
   return (
     <div className="max-w-lg mx-auto">
       <Link
-        to="/"
+        to="/profile"
         className="inline-flex items-center gap-1.5 text-stone-500 hover:text-stone-900 text-sm font-medium mb-4 transition-colors"
       >
         <ArrowLeftIcon className="size-4" /> Back
@@ -40,11 +26,17 @@ function CreatePage() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-8">
         <h1 className="text-xl font-bold text-stone-900 flex items-center gap-2 mb-6">
-          <SparklesIcon className="size-5 text-orange-500" />
-          New Product
+          <SaveIcon className="size-5 text-orange-500" />
+          Edit Product
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit(formData);
+          }}
+          className="space-y-4"
+        >
           <div className="flex items-center gap-2 border border-stone-200 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-orange-200 focus-within:border-orange-400 bg-white transition-all">
             <TypeIcon className="size-4 text-stone-400 shrink-0" />
             <input
@@ -75,7 +67,7 @@ function CreatePage() {
                 src={formData.imageUrl}
                 alt="Preview"
                 className="w-full h-40 object-cover"
-                onError={(e) => (e.target.style.display = "none")}
+                onError={(e) => (e.currentTarget.style.display = "none")}
               />
             </div>
           )}
@@ -91,21 +83,21 @@ function CreatePage() {
             />
           </div>
 
-          {createProduct.isError && (
+          {isError && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-700 text-sm">
-              Failed to create. Try again.
+              Failed to update. Try again.
             </div>
           )}
 
           <button
             type="submit"
             className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-full transition-colors disabled:opacity-60"
-            disabled={createProduct.isPending}
+            disabled={isPending}
           >
-            {createProduct.isPending ? (
+            {isPending ? (
               <span className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
             ) : (
-              "Create Product"
+              "Save Changes"
             )}
           </button>
         </form>
@@ -114,4 +106,4 @@ function CreatePage() {
   );
 }
 
-export default CreatePage;
+export default EditProductForm;
